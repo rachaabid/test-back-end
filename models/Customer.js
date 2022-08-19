@@ -6,15 +6,19 @@ const CustomerSchema = new Schema({
     type: String,
     required: [true, 'Full Name is required']
   },
+  email: {
+    type: String,
+    required: [true, 'Email is required']
+  },
   type: {
     type: String,
     required: [true, 'Type is required']
   }
 },
-{
-  versionKey: false,
-  timestamps: true
-});
+  {
+    versionKey: false,
+    timestamps: true
+  });
 
 const Customer = mongoose.model('customer', CustomerSchema);
 module.exports = Customer;
