@@ -26,6 +26,16 @@ app.use(passport.session());
 require('./passport-strategies/bearer');
 require('./db/connect');
 
+const apiAuth = require('./routes/Api.auth');
+const apiBook = require('./routes/Api.book');
+const apiCustomer = require('./routes/Api.customer');
+const apiCategory = require('./routes/Api.category');
+
+app.use('/api/v1', apiAuth);
+app.use('/api/v1', apiBook);
+app.use('/api/v1', apiCustomer);
+app.use('/api/v1', apiCategory);
+
 app.listen(process.env.port || 3000, function(){
   console.log('now listening for requests');
 })
