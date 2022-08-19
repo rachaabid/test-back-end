@@ -17,6 +17,11 @@ const UserSchema = new Schema({
   password: {
     type: String,
     required: [true, 'Password is required']
+  },
+  role: {
+    type: String,
+    required: [true, 'Role is required'],
+    delault: 'Admin'
   }
 },
 {
