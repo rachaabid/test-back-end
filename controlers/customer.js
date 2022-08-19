@@ -1,28 +1,38 @@
 const Customer = require('../models/Customer');
+const bcrypt = require('bcryptjs');
 
-exports.createCustomer = async (req, res)=>{
+exports.createCustomer = async (req, res) => {
   try {
-  await Customer.create(req.body);
-  res.send({message: 'Customer created'})  
+    const customerFound = await Customer.findOne({ email: req.body.email })
+    if (customerFound) {
+      return res.status(400).send({ message: 'the email is already in use' });
+    }
+    else {
+      const salt = await bcrypt.genSalt(10);
+      const hash = bcrypt.hashSync(req.body.email, salt);
+      req.body.email = hash;
+      await Customer.create(req.body);
+      res.send({ message: 'Customer created' })
+    }
   } catch (error) {
     res.status(500).send({
       message: error.message || 'Some error occured'
-    });  
+    });
   }
 }
 
-exports.getCustomers = async (req, res)=>{
+exports.getCustomers = async (req, res) => {
   try {
-   const customers = await Customer.find();
-   res.send(customers);
+    const customers = await Customer.find();
+    res.send(customers);
   } catch (error) {
     res.status(500).send({
       message: error.message || 'some error occured'
-    }); 
+    });
   }
 }
 
-exports.getCustomerById = async (req, res)=>{
+exports.getCustomerById = async (req, res) => {
   try {
     const customer = await Customer.findById(req.params.idCustomer);
     res.send(customer)
@@ -33,10 +43,10 @@ exports.getCustomerById = async (req, res)=>{
   }
 }
 
-exports.updateCustomer = async (req, res)=>{
+exports.updateCustomer = async (req, res) => {
   try {
-    await Customer.findByIdAndUpdate(req.params.idCustomer,  req.body);
-    res.send({message: 'Customer updated'})
+    await Customer.findByIdAndUpdate(req.params.idCustomer, req.body);
+    res.send({ message: 'Customer updated' })
   } catch (error) {
     res.status(500).send({
       message: error.message || 'some error occured'
@@ -44,10 +54,10 @@ exports.updateCustomer = async (req, res)=>{
   }
 }
 
-exports.deleteCustomer = async (req, res)=>{
+exports.deleteCustomer = async (req, res) => {
   try {
     await Customer.findByIdAndRemove(req.params.idCustomer);
-    res.send({message: 'Customer deleted'})
+    res.send({ message: 'Customer deleted' })
   } catch (error) {
     res.status(500).send({
       message: error.message || 'some error occured'
