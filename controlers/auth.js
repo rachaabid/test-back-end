@@ -48,3 +48,74 @@ exports.login = async (req, res) => {
     });
   }
 }
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const userFound = await user.findOne({ email: req.body.email });
+    if (!userFound) {
+      res.status(404).send({ message: 'user does not exist' });
+    }
+    let token = await Token.findOne({ userId: userFound._id })
+    if (token) {
+      await token.deleteOne();
+    }
+    const resetToken = randomString.generate(30)
+
+    await new Token({
+      userId: userFound._id,
+      token: resetToken,
+    }).save();
+
+    const link = `${process.env.dashboardURL}#/resetPassword/${resetToken}/${userFound._id}`;
+    await sendEmail(req.body.email, "Password Reset Request", { userName: userFound.userName, link: link, }, "../template/forgotPassword.html")
+    res.json({ message: 'email sent' })
+  } catch (error) {
+    res.status(500).send({
+      message: error.message || 'some error occured'
+    });
+  }
+
+}
+
+
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const passwordResetToken = await Token.findOne({ token: req.params.resetToken });
+    if (!passwordResetToken) {
+      res.status(400).json('Invalid or expired password reset token');
+    }
+    const dateNow = new Date();
+    const tokenDate = new Date(passwordResetToken.createdAt);
+    const diff = dateNow - tokenDate;
+    const seconds = Math.floor(diff / 1000);
+
+    if (seconds > 900) {
+      res.status(400).json('Invalid or expired password reset token');
+    }
+    let salt = await bcrypt.genSalt(10);
+    const hash = bcrypt.hashSync(req.body.password, salt);
+
+    await user.updateOne(
+      { _id: passwordResetToken.userId },
+      { $set: { password: hash } },
+      { new: true }
+    );
+    const user = await user.findById(passwordResetToken.userId);
+    await sendEmail(
+      user.email, "Password Reset Successfully",
+      {
+        userName: user.userName,
+      }, "../template/resetPassword.html"
+    );
+    await passwordResetToken.deleteOne();
+    res.json({ message: 'Password reset' });
+
+
+  } catch (error) {
+    res.status(500).send({
+      message: error.message || 'some error occured'
+    });
+  }
+
+}

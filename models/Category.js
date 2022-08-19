@@ -6,7 +6,7 @@ const CategorySchema = new Schema({
     type: String,
     required: [true, 'Name category is required']
   },
-  listBooks: [
+  books: [
     {
       type: Schema.Types.ObjectId,
       ref: "book"
