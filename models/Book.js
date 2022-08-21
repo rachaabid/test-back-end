@@ -15,8 +15,7 @@ const BookSchema = new Schema({
     required: [true, 'Description is required']
   },
   content: {
-    type: file,
-    required: [true, 'Content is required']
+    type: String,
   }
 },
 {

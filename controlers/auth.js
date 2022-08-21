@@ -2,7 +2,7 @@ const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const randomString = require('randomstring');
-const { sendEmail } = require('./sendEmail');
+const Token = require('../models/token');
 
 exports.signup = async (req, res) => {
   try {
@@ -15,7 +15,7 @@ exports.signup = async (req, res) => {
       const hash = bcrypt.hashSync(req.body.password, salt);
       req.body.password = hash;
       await User.create(req.body);
-      res.json({ message: 'User created' });
+      res.json({ message: 'Sigup successfully' });
     }
   } catch (error) {
     res.status(500).json({
@@ -37,7 +37,7 @@ exports.login = async (req, res) => {
     res.status(200).send({
       message: 'logged in succeffuly',
       token: jwt.sign(
-        { userId: userFound._id, role: userFound.role }, process.env.SECRET_KEY,
+        { userId: userFound._id, role: userFound.role, type: userFound.type }, process.env.SECRET_KEY,
         { expiresIn: '1d' }
       )
     }
@@ -51,7 +51,7 @@ exports.login = async (req, res) => {
 
 exports.forgotPassword = async (req, res) => {
   try {
-    const userFound = await user.findOne({ email: req.body.email });
+    const userFound = await User.findOne({ email: req.body.email });
     if (!userFound) {
       res.status(404).send({ message: 'user does not exist' });
     }
@@ -67,7 +67,7 @@ exports.forgotPassword = async (req, res) => {
     }).save();
 
     const link = `${process.env.dashboardURL}#/resetPassword/${resetToken}/${userFound._id}`;
-    await sendEmail(req.body.email, "Password Reset Request", { userName: userFound.userName, link: link, }, "../template/forgotPassword.html")
+    await sendEmail(req.body.email, "Password Reset Request", { firstName: userFound.firstName, link: link, }, "../template/forgotPassword.html")
     res.json({ message: 'email sent' })
   } catch (error) {
     res.status(500).send({
@@ -101,11 +101,11 @@ exports.resetPassword = async (req, res) => {
       { $set: { password: hash } },
       { new: true }
     );
-    const user = await user.findById(passwordResetToken.userId);
+    const user = await User.findById(passwordResetToken.userId);
     await sendEmail(
       user.email, "Password Reset Successfully",
       {
-        userName: user.userName,
+        firstName: user.firstName,
       }, "../template/resetPassword.html"
     );
     await passwordResetToken.deleteOne();
@@ -119,3 +119,9 @@ exports.resetPassword = async (req, res) => {
   }
 
 }
+
+exports.logOut =  function (req, res, next) {
+  req.logout(function(err) {
+   if (err) { return next(err)}
+   res.json({message:'Logged out'})
+ });}

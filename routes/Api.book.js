@@ -2,13 +2,53 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 
-const { createBook, getBooks, getBookById, deleteBook, updateBook } = require('../controlers/book')
+const path = require('path');
+const multer = require('multer');
 
-router.post('/Book', passport.authenticate('bearer', { session: false }), createBook);
-router.get('/Books', passport.authenticate('bearer', { session: false }), getBooks);
-router.get('Book/:idBook', passport.authenticate('bearer', { session: false }), getBookById);
-router.put('Book/:idBook', passport.authenticate('bearer', { session: false }), updateBook);
-router.delete('Book/:idBook', passport.authenticate('bearer', { session: false }), deleteBook);
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const folder = path.resolve('./uploads')
+    cb(null, folder)
+  },
+  filename: (req, file, cb) => {
+    const fileExtension = path.extname(file.originalname)
+    const filename = Date.now() + fileExtension
+    cb(null, filename)
+  }
+})
+
+function fileFilter(req, file, cb) {
+  const fileExtension = path.extname(file.originalname)
+  const acceptedExtensions = ['.pdf']
+
+  cb(null, acceptedExtensions.includes(fileExtension))
+}
+
+const upload = multer({ storage: storage, fileFilter: fileFilter, limits: { fieldSize: 25 * 1024 * 1024 } });
+
+
+const { createBook, getBooks, getBookById, deleteBook, updateBook } = require('../controlers/book');
+
+
+router.post('/Books',
+ [passport.authenticate('bearer', { session: false }), upload.single('content')], 
+createBook);
+
+router.get('/Books', 
+ passport.authenticate('bearer', { session: false }),
+ getBooks);
+
+router.get('/Books/:idBook',
+  passport.authenticate('bearer', { session: false }), 
+ getBookById);
+
+router.put('/Books/:idBook',
+ [passport.authenticate('bearer', { session: false }), upload.single('content')], 
+updateBook);
+
+router.delete('/Books/:idBook', 
+ passport.authenticate('bearer', { session: false }), 
+deleteBook);
 
 
 module.exports = router;

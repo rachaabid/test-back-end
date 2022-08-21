@@ -14,7 +14,7 @@ exports.createCategory = async (req, res)=>{
 
 exports.getCategories = async (req, res)=>{
   try {
-    const categories = await Category.find().populate('listBooks');
+    const categories = await Category.find().populate('books');
     res.send(categories);
   } catch (error) {
     res.status(500).send({
@@ -34,7 +34,7 @@ exports.getCategoryById = async (req, res)=>{
   }
 }
 
-exports.upadateCategory = async (req, res)=>{
+exports.updateCategory = async (req, res)=>{
   try {
     await Category.findByIdAndUpdate(req.params.idCategory, req.body);
     res.send({message: 'Category updated'});
@@ -69,7 +69,6 @@ exports.getBooksForCategories = async (req, res)=>{
       message: error.message || 'Some error occured'
     });
   }
-
 }
 
 
