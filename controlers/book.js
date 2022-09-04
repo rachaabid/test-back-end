@@ -3,7 +3,8 @@ const Category = require('../models/Category');
 
 exports.createBook = async (req, res)=>{
   try {
-    await Book.create(req.body);
+    const book = await Book.create(req.body);
+    await Category.findByIdAndUpdate(req.category._id, {$push: {books: book._id}}, {new: true});
     res.send({message: 'Book created'})
   } catch (error) {
     res.status(500).send({
@@ -47,6 +48,7 @@ exports.updateBook = async (req, res)=>{
 
 exports.deleteBook = async (req, res)=>{
   try {
+    await Category.findByIdAndUpdate(req.category._id, {$pull: {books: req.params.idBook}}, {new: true})
     await Book.findByIdAndRemove(req.params.idBook);
     res.send({message: 'Book deleted'})
   } catch (error) {

@@ -1,5 +1,4 @@
 const Category = require('../models/Category');
-const Book = require('../models/Book');
 
 exports.createCategory = async (req, res)=>{
   try {
@@ -56,19 +55,5 @@ exports.deleteCategory = async (req, res)=>{
   }
 }
 
-exports.getBooksForCategories = async (req, res)=>{
-  try {
-    const books = await Book.find();
-    listBooks = []
-    books.map(book=>{
-      listBooks.push({label: book.title, value: book._id})
-    })
-    res.send(listBooks);
-  } catch (error) {
-    res.status(500).send({
-      message: error.message || 'Some error occured'
-    });
-  }
-}
 
 

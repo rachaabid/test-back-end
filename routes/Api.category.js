@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 
-const { createCategory, getCategories, getCategoryById, deleteCategory, updateCategory, getBooksForCategories } = require('../controlers/category');
+const { createCategory, getCategories, getCategoryById, deleteCategory, updateCategory } = require('../controlers/category');
 
 
 router.post('/Categories',
@@ -24,10 +24,5 @@ updateCategory);
 router.delete('/Categories/:idCategory', 
  passport.authenticate('bearer', { session: false }),
  deleteCategory);
-
-router.get('/listBooks', 
- passport.authenticate('bearer', {session: false}), 
-getBooksForCategories)
-
 
 module.exports = router;
