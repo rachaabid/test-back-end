@@ -26,12 +26,27 @@ exports.getBookById = async (req, res)=>{
 
 exports.getBooks = async (req, res)=>{
   try {
-    const books = await Book.find();
+    const books = await Book.find().populate('categories');
     res.send(books);
   } catch (error) {
     res.status(500).send({
       message: error.message || 'Some error occured'
     }); 
+  }
+}
+
+exports.getCategoriesForBooks = async (req, res)=>{
+  try {
+    const categories = await Category.find();
+    listCategories = []
+    categories.map(category=>{
+     listCategories.push({label: category.nameCategory, value: category._id})
+    })
+    res.send(listCategories);
+  } catch (error) {
+    res.status(500).send({
+      message: error.message || 'some error occured'
+    });
   }
 }
 

@@ -16,7 +16,13 @@ const BookSchema = new Schema({
   },
   content: {
     type: String,
-  }
+  },
+  categories: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "category"
+    }
+  ]
 },
 {
   versionKey: false,

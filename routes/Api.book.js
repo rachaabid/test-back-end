@@ -27,7 +27,7 @@ function fileFilter(req, file, cb) {
 const upload = multer({ storage: storage, fileFilter: fileFilter, limits: { fieldSize: 25 * 1024 * 1024 } });
 
 
-const { createBook, getBooks, getBookById, deleteBook, updateBook } = require('../controlers/book');
+const { createBook, getBooks, getBookById, deleteBook, updateBook, getCategoriesForBooks } = require('../controlers/book');
 
 
 router.post('/Books',
@@ -49,6 +49,10 @@ updateBook);
 router.delete('/Books/:idBook', 
  passport.authenticate('bearer', { session: false }), 
 deleteBook);
+
+router.get('/listCategories',  
+  passport.authenticate('bearer', {session: false}),
+ getCategoriesForBooks);
 
 
 module.exports = router;
