@@ -3,6 +3,9 @@ const Category = require('../models/Category');
 
 exports.createBook = async (req, res)=>{
   try {
+    if(req.body.photo == ''){
+      req.body.photo = 'https://i.imgur.com/I65uxQr.png'
+    }
     const book = await Book.create(req.body);
     await Category.findByIdAndUpdate(req.category._id, {$push: {books: book._id}}, {new: true});
     res.send({message: 'Book created'})
@@ -38,7 +41,7 @@ exports.getBooks = async (req, res)=>{
 exports.getCategoriesForBooks = async (req, res)=>{
   try {
     const categories = await Category.find();
-    listCategories = []
+    listCategories = [];
     categories.map(category=>{
      listCategories.push({label: category.nameCategory, value: category._id})
     })
@@ -63,9 +66,19 @@ exports.updateBook = async (req, res)=>{
 
 exports.deleteBook = async (req, res)=>{
   try {
-    await Category.findByIdAndUpdate(req.category._id, {$pull: {books: req.params.idBook}}, {new: true})
+    // await Category.findByIdAndUpdate(req.category._id, {$pull: {books: req.params.idBook}}, {new: true})
     await Book.findByIdAndRemove(req.params.idBook);
     res.send({message: 'Book deleted'})
+  } catch (error) {
+    res.status(500).send({
+      message: error.message || 'Some error occured'
+    }); 
+  }
+}
+
+exports.download = async (req, res)=>{
+  try {
+   res.download('./uploads') 
   } catch (error) {
     res.status(500).send({
       message: error.message || 'Some error occured'

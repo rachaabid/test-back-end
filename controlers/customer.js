@@ -1,11 +1,20 @@
 const Customer = require('../models/Customer');
-
+const bcrypt = require('bcryptjs');
 
 exports.createCustomer = async (req, res) => {
   try {
+    const customerFound = await Customer.findOne({ email: req.body.email })
+    if (customerFound) {
+      return res.status(400).send({ message: 'the email is already in use' });
+    }
+    else {
+      const salt = await bcrypt.genSalt(10);
+      const hash = bcrypt.hashSync(req.body.password, salt);
+      req.body.password = hash;
       await Customer.create(req.body);
       res.send({ message: 'Customer created' })
     }
+  }
    catch (error) {
     res.status(500).send({
       message: error.message || 'Some error occured'

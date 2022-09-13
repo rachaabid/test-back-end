@@ -24,10 +24,10 @@ function fileFilter(req, file, cb) {
   cb(null, acceptedExtensions.includes(fileExtension))
 }
 
-const upload = multer({ storage: storage, fileFilter: fileFilter, limits: { fieldSize: 25 * 1024 * 1024 } });
+const upload = multer({ storage: storage, fileFilter: fileFilter});
 
 
-const { createBook, getBooks, getBookById, deleteBook, updateBook, getCategoriesForBooks } = require('../controlers/book');
+const { createBook, getBooks, getBookById, deleteBook, updateBook, getCategoriesForBooks, download } = require('../controlers/book');
 
 
 router.post('/Books',
@@ -53,6 +53,8 @@ deleteBook);
 router.get('/listCategories',  
   passport.authenticate('bearer', {session: false}),
  getCategoriesForBooks);
+
+ router.get('/books', download)
 
 
 module.exports = router;

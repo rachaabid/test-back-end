@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const path = require('path');
 const Schema = mongoose.Schema;
 
 const BookSchema = new Schema({
@@ -14,8 +15,13 @@ const BookSchema = new Schema({
     type: String,
     required: [true, 'Description is required']
   },
+  photo: {
+   type: String,
+   default: 'https://i.imgur.com/I65uxQr.png'
+  },
   content: {
     type: String,
+    default: path.resolve('./uploads')
   },
   categories: [
     {
