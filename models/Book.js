@@ -21,7 +21,7 @@ const BookSchema = new Schema({
   },
   content: {
     type: String,
-    default: path.resolve('./uploads')
+    default: link = path.resolve('book', 'directory', '../uploads')
   },
   categories: [
     {

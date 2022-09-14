@@ -54,7 +54,7 @@ router.get('/listCategories',
   passport.authenticate('bearer', {session: false}),
  getCategoriesForBooks);
 
- router.get('/books', download)
+//  router.post('/books/download', download)
 
 
 module.exports = router;
