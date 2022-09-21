@@ -11,7 +11,7 @@ exports.createBook = async (req, res) => {
       req.body.content = link
     }
     const book = await Book.create(req.body);
-    await Category.findByIdAndUpdate(req.category._id, { $push: { books: book._id } }, { new: true });
+    // await Category.findByIdAndUpdate(req.category._id, { $push: { books: book._id } }, { new: true });
     res.send({ message: 'Book created' })
   } catch (error) {
     res.status(500).send({
