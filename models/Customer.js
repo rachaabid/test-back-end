@@ -19,6 +19,10 @@ const CustomerSchema = new Schema({
   type: {
     type: String,
     required: [true, 'Type is required']
+  },
+  countDownload: {
+    type: Number,
+    default: 0
   }
 },
   {

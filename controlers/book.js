@@ -7,11 +7,11 @@ exports.createBook = async (req, res) => {
     if (req.body.photo == '') {
       req.body.photo = 'https://i.imgur.com/I65uxQr.png'
     }
-    if (req.body.content == '') {
-      req.body.content = link
+    if (req.file) {
+      req.body.contentLink = "http://localhost:3000/uploads/"+req.file.filename
     }
     const book = await Book.create(req.body);
-    // await Category.findByIdAndUpdate(req.category._id, { $push: { books: book._id } }, { new: true });
+    await Category.findByIdAndUpdate(req.body.category, { $push: { books: book._id } }, { new: true });
     res.send({ message: 'Book created' })
   } catch (error) {
     res.status(500).send({
@@ -33,7 +33,7 @@ exports.getBookById = async (req, res) => {
 
 exports.getBooks = async (req, res) => {
   try {
-    const books = await Book.find().populate('categories');
+    const books = await Book.find();
     res.send(books);
   } catch (error) {
     res.status(500).send({
@@ -59,6 +59,13 @@ exports.getCategoriesForBooks = async (req, res) => {
 
 exports.updateBook = async (req, res) => {
   try {
+    console.log(req.file)
+    if (req.file) {
+      req.body.contentLink = "http://localhost:3000/uploads/"+req.file.filename
+    }
+   const book = await Book.findById(req.params.idBook)
+   await Category.findByIdAndUpdate(book.category, { $pull: { books: req.params.idBook } }, { new: true });
+    await Category.findByIdAndUpdate(req.body.category, { $push: { books: req.params.idBook } }, { new: true });
     await Book.findByIdAndUpdate(req.params.idBook, req.body);
     res.send({ message: 'Book updated' })
   } catch (error) {
@@ -70,7 +77,7 @@ exports.updateBook = async (req, res) => {
 
 exports.deleteBook = async (req, res) => {
   try {
-    // await Category.findByIdAndUpdate(req.category._id, {$pull: {books: req.params.idBook}}, {new: true})
+     await Category.findByIdAndUpdate(req.body.category, {$pull: {books: req.params.idBook}}, {new: true})
     await Book.findByIdAndRemove(req.params.idBook);
     res.send({ message: 'Book deleted' })
   } catch (error) {
@@ -80,15 +87,5 @@ exports.deleteBook = async (req, res) => {
   }
 }
 
-// exports.download = async (req, res) => {
-//   try {
-//     const filePath = '${__dirname}/uploads/book.pdf';
-//     res.download(filePath, 'book.pdf');
 
-//   } catch (error) {
-//     res.status(500).send({
-//       message: error.message || 'Some error occured'
-//     });
-//   }
-// }
 

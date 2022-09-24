@@ -20,15 +20,17 @@ const BookSchema = new Schema({
    default: 'https://i.imgur.com/I65uxQr.png'
   },
   content: {
-    type: String,
-    default: link = path.resolve('../uploads')
+    type: Buffer,
   },
-  categories: [
+  contentLink: {
+    type:String
+  },
+  category: 
     {
       type: Schema.Types.ObjectId,
       ref: "category"
     }
-  ]
+  
 },
 {
   versionKey: false,
