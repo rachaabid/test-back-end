@@ -30,13 +30,13 @@ const apiAuth = require('./routes/Api.auth');
 const apiBook = require('./routes/Api.book');
 const apiCustomer = require('./routes/Api.customer');
 const apiCategory = require('./routes/Api.category');
-const apiUser = require('./routes/api.user')
+
 
 app.use('/api/v1', apiAuth);
 app.use('/api/v1', apiBook);
 app.use('/api/v1', apiCustomer);
 app.use('/api/v1', apiCategory);
-app.use('api/v1', apiUser);
+
 
 app.listen(process.env.port || 3000, function () {
   console.log('now listening for requests');

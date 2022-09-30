@@ -25,12 +25,12 @@ const BookSchema = new Schema({
   contentLink: {
     type:String
   },
-  category: 
+  categories:[ 
     {
       type: Schema.Types.ObjectId,
       ref: "category"
     }
-  
+  ]
 },
 {
   versionKey: false,

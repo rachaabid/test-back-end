@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const randomString = require('randomstring');
 const Token = require('../models/token');
+const Customer = require('../models/Customer');
 
 exports.signup = async (req, res) => {
   try {
@@ -37,7 +38,32 @@ exports.login = async (req, res) => {
     res.status(200).send({
       message: 'logged in succeffuly',
       token: jwt.sign(
-        { userId: userFound._id, role: userFound.role, type: userFound.type }, process.env.SECRET_KEY,
+        { userId: userFound._id }, process.env.SECRET_KEY,
+        { expiresIn: '1d' }
+      )
+    }
+    );
+  } catch (error) {
+    res.status(500).send({
+      message: error.message || 'some error occured'
+    });
+  }
+}
+
+exports.loginCustomer = async (req, res) => {
+  try {
+    const customerFound = await Customer.findOne({ email: req.body.email });
+    if (!customerFound) {
+      return res.status(400).send({ message: 'Mail or password is invalid' });
+    }
+    const valid = bcrypt.compare(req.body.password, customerFound.password)
+    if (!valid) {
+      return res.status(400).send({ message: 'Mail or password is invalid' })
+    }
+    res.status(200).send({
+      message: 'logged in succeffuly',
+      token: jwt.sign(
+        { customerId: customerFound._id, type: customerFound.type , countDownload: customerFound.countDownload}, process.env.SECRET_KEY,
         { expiresIn: '1d' }
       )
     }

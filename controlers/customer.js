@@ -65,3 +65,20 @@ exports.deleteCustomer = async (req, res) => {
     });
   }
 }
+
+exports.numberDownload = async (req, res)=>{
+  try {
+    const customer =  await Customer.findByIdAndUpdate(req.user.customerId)
+    if(customer.countDownload<5){
+      await Customer.findByIdAndUpdate(req.user.customerId, {$inc:{countDownload: +1}}, {new: true})
+    res.send({message: 'downloaded succefully'})
+    }
+    else {
+      res.status(400).send({message: "You can't download only five per month"})
+    }
+  } catch (error) {
+    res.status(500).send({
+      message: error.message || 'some error occured'
+    }); 
+  }
+}

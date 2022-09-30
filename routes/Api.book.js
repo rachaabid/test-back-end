@@ -35,7 +35,7 @@ router.post('/Books',
 createBook);
 
 router.get('/Books', 
- passport.authenticate('bearer', { session: false }),
+  passport.authenticate('bearer', { session: false }),
  getBooks);
 
 router.get('/Books/:idBook',
@@ -53,6 +53,13 @@ deleteBook);
 router.get('/listCategories',  
   passport.authenticate('bearer', {session: false}),
  getCategoriesForBooks);
+
+
+ router.get('/BooksCustomer',
+ getBooks);
+
+router.get('/BookCustomer/:idBook',
+ getBookById);
 
 
 
