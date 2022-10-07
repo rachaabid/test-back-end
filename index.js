@@ -24,6 +24,9 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 require('./passport-strategies/bearer');
+
+const crons = require('./crons/cron');
+
 require('./db/connect');
 
 const apiAuth = require('./routes/Api.auth');
