@@ -25,7 +25,7 @@ router.delete('/Customers/:idCustomer',
  passport.authenticate('bearer', { session: false }), 
 deleteCustomer);
 
-router.put('/download/:idCustomer', 
+router.put('/download/:customerId', 
 // passport.authenticate('bearer', { session: false }), 
 numberDownload)
 

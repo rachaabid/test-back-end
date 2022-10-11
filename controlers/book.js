@@ -63,9 +63,12 @@ exports.updateBook = async (req, res) => {
     if (req.file) {
       req.body.contentLink = "http://localhost:3000/uploads/"+req.file.filename
     }
-   const book = await Book.findById(req.params.idBook)
+   const book = await Book.findById(req.params.idBook);
+
    await Category.findByIdAndUpdate(book.category, { $pull: { books: req.params.idBook } }, { new: true });
+
     await Category.findByIdAndUpdate(req.body.category, { $push: { books: req.params.idBook } }, { new: true });
+    
     await Book.findByIdAndUpdate(req.params.idBook, req.body);
     res.send({ message: 'Book updated' })
   } catch (error) {

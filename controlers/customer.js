@@ -68,9 +68,9 @@ exports.deleteCustomer = async (req, res) => {
 
 exports.numberDownload = async (req, res)=>{
   try {
-    const customer =  await Customer.findByIdAndUpdate(req.user.customerId)
+    const customer =  await Customer.findByIdAndUpdate(req.params.customerId)
     if(customer.countDownload<5){
-      await Customer.findByIdAndUpdate(req.user.customerId, {$inc:{countDownload: +1}}, {new: true})
+      await Customer.findByIdAndUpdate(req.params.customerId, {$inc:{countDownload: +1}}, {new: true})
     res.send({message: 'downloaded succefully'})
     }
     else {
